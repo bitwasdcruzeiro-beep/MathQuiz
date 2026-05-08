@@ -1,0 +1,1544 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>MathQuiz OFICIAL</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700;800;900&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="img/WhatsApp Image 2026-04-28 at 18.56.20.jpeg">
+<style>
+:root{
+  --bg:#0a0f2c;--text:#e8e8e8;--accent:#4fc3f7;
+  --blue-neon:#4fc3f7;--violet-neon:#c084fc;--violet-mid:#7b2fbf;--violet-dark:#2d0a4e;
+  --lilac:#e9d5ff;--blue-crystal:#a8d4f5;--silver:#b0b8c8;
+  --yellow:#facc15;--orange:#fb923c;--green:#86efac;--green-v:#22c55e;
+  --red:#fca5a5;--red-v:#ef4444;--blue:#67e8f9;
+  --font:'Baloo 2',cursive;
+  --r-md:10px;--r-lg:18px;--r-xl:24px;--r-max:9999px;
+  --spring:cubic-bezier(0.34,1.56,0.64,1);--out:cubic-bezier(0.16,1,0.3,1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;-webkit-text-size-adjust:100%}
+body{min-height:100dvh;background:var(--bg);color:var(--text);font-family:var(--font);
+  -webkit-font-smoothing:antialiased;overflow:hidden;touch-action:manipulation}
+svg{display:block}
+button{cursor:pointer;font-family:var(--font);display:inline-flex;align-items:center;
+  justify-content:center;gap:.5rem;border:none;border-radius:var(--r-md);
+  padding:.75rem 1.5rem;font-weight:800;font-size:.875rem;letter-spacing:.05em;
+  text-transform:uppercase;background:var(--accent);color:var(--bg);
+  transition:background .15s,transform .15s var(--spring),box-shadow .15s;
+  user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;
+  touch-action:manipulation}
+button:active{transform:scale(0.97)}
+button:disabled{opacity:.4;cursor:not-allowed;pointer-events:none}
+
+/* KEYFRAMES GLOBAIS */
+@keyframes charFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes mascotDance{0%,100%{transform:rotate(0) scale(1)}25%{transform:rotate(-12deg) scale(1.08)}75%{transform:rotate(12deg) scale(1.08)}}
+@keyframes mascotWiggle{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px) rotate(-3deg)}75%{transform:translateX(4px) rotate(3deg)}}
+@keyframes mascotNod{0%,100%{transform:scaleY(1)}50%{transform:scaleY(0.92)}}
+@keyframes mascotSide{0%,100%{transform:translateX(0)}33%{transform:translateX(-8px)}66%{transform:translateX(8px)}}
+@keyframes blink{0%,90%,100%{transform:scaleY(1)}95%{transform:scaleY(0.1)}}
+@keyframes mapFloat{0%,100%{transform:translateY(0) rotate(0)}30%{transform:translateY(-8px) rotate(-3deg)}70%{transform:translateY(-4px) rotate(2deg)}}
+@keyframes mapDance{0%,100%{transform:rotate(0) scale(1) translateY(0)}20%{transform:rotate(-15deg) scale(1.1) translateY(-5px)}50%{transform:rotate(15deg) scale(1.1) translateY(-8px)}80%{transform:rotate(-8deg) scale(1.05) translateY(-3px)}}
+
+/* CANVASES */
+#particles-canvas,#confetti-canvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none}
+#particles-canvas{z-index:0}
+#confetti-canvas{z-index:999}
+
+/* AUDIO */
+#audio-toggle{position:fixed;top:12px;right:12px;z-index:600;
+  background:rgba(255,255,255,.08);border:1px solid rgba(79,195,247,.25);
+  border-radius:var(--r-md);font-size:1.2rem;padding:6px 10px;
+  backdrop-filter:blur(8px);cursor:pointer;text-transform:none;letter-spacing:0}
+#audio-toggle:hover{background:rgba(79,195,247,.15);border-color:var(--blue-neon)}
+
+/* SCREENS */
+.screen{display:none;position:fixed;inset:0;width:100%;height:100%;min-height:100dvh;
+  flex-direction:column;align-items:center;justify-content:center;
+  opacity:0;transition:opacity .35s var(--out);overflow:hidden;z-index:1}
+.screen.active{display:flex;opacity:1}
+.screen.scrollable{overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;
+  align-items:flex-start;justify-content:flex-start}
+
+/* ══════════════════════════
+   HOME
+══════════════════════════ */
+#screen-home{background:var(--bg);position:relative;overflow:hidden}
+#screen-home::before{content:'';position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(rgba(79,195,247,.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(79,195,247,.04) 1px,transparent 1px);
+  background-size:48px 48px}
+#screen-home::after{content:'';position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 70% 60% at 50% 60%,rgba(45,10,78,.5) 0%,transparent 70%)}
+
+.home-content{position:relative;z-index:2;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;width:100%;height:100%;
+  padding:24px 20px 32px;gap:0}
+
+/* Título - fixo no topo da content */
+.home-title-wrap{display:flex;flex-direction:column;align-items:center;margin-bottom:16px;
+  animation:titleDrop .7s var(--spring) both}
+@keyframes titleDrop{from{opacity:0;transform:translateY(-40px) scale(.85)}to{opacity:1;transform:none}}
+.home-title{font-size:clamp(2.4rem,6vw,4.5rem);font-weight:900;line-height:1;
+  background:linear-gradient(135deg,var(--blue-neon) 0%,var(--violet-neon) 60%,var(--lilac) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  filter:drop-shadow(0 0 18px rgba(192,132,252,.6));letter-spacing:2px}
+.home-subtitle{font-size:clamp(.75rem,1.5vw,.9rem);font-weight:700;color:var(--blue-crystal);
+  letter-spacing:4px;text-transform:uppercase;margin-top:4px;opacity:.85}
+
+/* Área do mascote HOME - balão ABAIXO do título, mascote ABAIXO do balão */
+.home-mascot-area{position:relative;display:flex;flex-direction:column;
+  align-items:center;gap:0;margin-bottom:20px;
+  animation:charEntry .8s var(--spring) .2s both}
+@keyframes charEntry{from{opacity:0;transform:scale(.4) rotate(-10deg)}to{opacity:1;transform:none}}
+
+/* Balão de fala home - ABAIXO do título, ACIMA do mascote */
+.home-speech-bubble{
+  background:rgba(45,10,78,.95);border:1.5px solid var(--violet-neon);border-radius:16px;
+  padding:7px 16px;font-size:.82rem;font-weight:700;color:var(--lilac);white-space:nowrap;
+  box-shadow:0 0 14px rgba(192,132,252,.4);
+  transition:opacity .25s;pointer-events:none;
+  margin-bottom:8px; /* espaço entre balão e mascote */
+  position:relative;
+}
+/* seta do balão aponta para BAIXO (em direção ao mascote) */
+.home-speech-bubble::after{
+  content:'';position:absolute;bottom:-9px;left:50%;transform:translateX(-50%);
+  border:8px solid transparent;border-top-color:var(--violet-neon);border-bottom:none}
+
+#home-mascot-wrap .mascot-svg{
+  width:clamp(90px,13vw,130px);height:auto;
+  filter:drop-shadow(0 0 12px rgba(192,132,252,.5));
+  animation:charFloat 3s ease-in-out infinite}
+
+.home-platform{width:70px;height:10px;
+  background:radial-gradient(ellipse,rgba(79,195,247,.5) 0%,transparent 70%);
+  border-radius:50%;animation:platformPulse 2s ease-in-out infinite;margin-top:2px}
+@keyframes platformPulse{0%,100%{transform:scaleX(1);opacity:.6}50%{transform:scaleX(1.2);opacity:1}}
+
+/* Botões home */
+.home-buttons{display:flex;flex-direction:column;align-items:center;gap:14px;
+  animation:btnsFadeUp .6s ease .5s both}
+@keyframes btnsFadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+.btn-play{font-size:clamp(1rem,2vw,1.3rem);font-weight:900;padding:15px 52px;
+  background:linear-gradient(135deg,var(--blue-neon),var(--violet-mid));color:#fff;
+  border-radius:var(--r-max);box-shadow:0 0 20px rgba(79,195,247,.5),0 4px 24px rgba(0,0,0,.4);
+  text-transform:uppercase;letter-spacing:.1em;border:none}
+.btn-play:hover{box-shadow:0 0 30px rgba(79,195,247,.7),0 6px 30px rgba(0,0,0,.5);transform:translateY(-3px) scale(1.03)}
+.btn-continue{font-size:clamp(.85rem,1.5vw,1rem);font-weight:800;padding:12px 40px;
+  background:rgba(192,132,252,.15);border:1.5px solid var(--violet-neon)!important;
+  color:var(--lilac);border-radius:var(--r-max);text-transform:uppercase}
+.saved-info{font-size:.78rem;font-weight:600;color:var(--silver);letter-spacing:1px;margin-top:-4px;text-align:center}
+.saved-info span{color:var(--violet-neon)}
+.home-deco{position:absolute;font-size:1.4rem;line-height:2.2;opacity:.2;pointer-events:none;top:50%;transform:translateY(-50%)}
+.home-deco.left{left:20px}.home-deco.right{right:20px}
+.home-version{position:absolute;bottom:10px;font-size:.68rem;color:var(--silver);opacity:.35;letter-spacing:2px}
+
+/* ══════════════════════════
+   MAP
+══════════════════════════ */
+#screen-map{background:var(--bg)}
+.map-header{position:sticky;top:0;z-index:10;width:100%;display:flex;align-items:center;
+  justify-content:space-between;padding:14px 20px;
+  background:rgba(10,15,44,.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(79,195,247,.15);flex-shrink:0}
+.map-title-group{display:flex;flex-direction:column;align-items:center;gap:2px}
+.map-title{font-size:1.15rem;font-weight:900;
+  background:linear-gradient(135deg,var(--blue-neon),var(--violet-neon));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:2px}
+.map-score-badge{font-size:.75rem;font-weight:700;color:var(--blue-crystal);letter-spacing:1px}
+.map-score-badge span{color:var(--violet-neon)}
+.map-back-btn{background:transparent;border:1px solid rgba(79,195,247,.3)!important;
+  color:var(--blue-crystal);font-size:.75rem;font-weight:700;padding:6px 14px;
+  border-radius:var(--r-max);text-transform:uppercase;white-space:nowrap}
+.map-back-btn:hover{background:rgba(79,195,247,.1);border-color:var(--blue-neon)!important}
+.map-ops-bar{display:flex;gap:6px}
+.op-pip{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+  font-size:.9rem;font-weight:900;background:rgba(255,255,255,.06);color:rgba(255,255,255,.5);
+  border:1px solid rgba(255,255,255,.1)}
+.map-scroll{position:relative;z-index:2;width:100%;flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+#map-phases-container{width:100%;max-width:860px;margin:0 auto;padding:28px 20px 120px;display:flex;flex-direction:column;gap:40px}
+.operator-section{display:flex;flex-direction:column;gap:16px;animation:secIn .5s ease both}
+@keyframes secIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+.operator-section:nth-child(2){animation-delay:.1s}
+.operator-section:nth-child(3){animation-delay:.2s}
+.operator-section:nth-child(4){animation-delay:.3s}
+.op-header{display:flex;align-items:center;gap:14px}
+.op-icon{width:46px;height:46px;border-radius:var(--r-lg);display:flex;align-items:center;justify-content:center;font-size:1.4rem;font-weight:900;flex-shrink:0}
+.op-icon.sum{background:rgba(79,195,247,.15);color:var(--blue-neon);border:1.5px solid rgba(79,195,247,.4)}
+.op-icon.sub{background:rgba(192,132,252,.15);color:var(--violet-neon);border:1.5px solid rgba(192,132,252,.4)}
+.op-icon.mul{background:rgba(233,213,255,.1);color:var(--lilac);border:1.5px solid rgba(233,213,255,.3)}
+.op-icon.div{background:rgba(168,212,245,.12);color:var(--blue-crystal);border:1.5px solid rgba(168,212,245,.35)}
+.op-info{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
+.op-name{font-size:1.05rem;font-weight:800;color:var(--text);letter-spacing:1px}
+.op-prog-txt{font-size:.72rem;color:var(--silver)}
+.op-prog-bar{flex:1;height:4px;background:rgba(255,255,255,.08);border-radius:var(--r-max);overflow:hidden;max-width:160px}
+.op-prog-fill{height:100%;border-radius:var(--r-max);transition:width .8s var(--out)}
+.op-prog-fill.sum{background:linear-gradient(90deg,var(--blue-neon),#81d4fa)}
+.op-prog-fill.sub{background:linear-gradient(90deg,var(--violet-neon),#d8b4fe)}
+.op-prog-fill.mul{background:linear-gradient(90deg,var(--lilac),#f3e8ff)}
+.op-prog-fill.div{background:linear-gradient(90deg,var(--blue-crystal),#bae6fd)}
+.phases-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.phase-card{position:relative;aspect-ratio:1;border-radius:var(--r-lg);display:flex;
+  flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;
+  transition:transform .2s var(--spring),box-shadow .2s;border:1.5px solid transparent;
+  overflow:hidden;user-select:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.phase-card.locked{background:rgba(255,255,255,.03);border-color:rgba(255,255,255,.06);cursor:not-allowed;opacity:.4}
+.phase-card.available{background:rgba(79,195,247,.07);border-color:rgba(79,195,247,.3)}
+.phase-card.available:hover{transform:translateY(-4px) scale(1.05);box-shadow:0 0 20px rgba(79,195,247,.5);border-color:var(--blue-neon)}
+.phase-card.available:active,.phase-card.completed:active{transform:scale(.94)}
+.phase-card.completed{background:rgba(79,195,247,.1);border-color:rgba(79,195,247,.5)}
+.phase-card.completed:hover{transform:translateY(-4px) scale(1.05)}
+.phase-num{font-size:clamp(1rem,2.5vw,1.5rem);font-weight:800;line-height:1;color:var(--text)}
+.phase-lock{font-size:clamp(.8rem,2vw,1rem);opacity:.5}
+.phase-stars{display:flex;gap:1px;font-size:clamp(.5rem,1.2vw,.7rem);line-height:1}
+.star{opacity:.2}.star.filled{opacity:1}
+.phase-card.current{animation:phasePulse 2s ease-in-out infinite}
+@keyframes phasePulse{0%,100%{box-shadow:0 0 0 0 rgba(79,195,247,0)}50%{box-shadow:0 0 0 6px rgba(79,195,247,.2)}}
+.op-divider{width:100%;height:1px;background:linear-gradient(90deg,transparent,rgba(79,195,247,.15),transparent)}
+
+/* MASCOTE NO MAPA - livre para andar pela tela */
+#map-mascot{
+  position:fixed;z-index:200;
+  display:none;flex-direction:column;align-items:center;gap:0;
+  pointer-events:none;will-change:left,bottom;}
+#map-mascot .mascot-svg{width:72px;height:auto;
+  filter:drop-shadow(0 4px 14px rgba(192,132,252,.6));}
+#map-mascot.flipped .mascot-svg{transform:scaleX(-1)}
+#map-mascot.walking .mascot-svg{animation:mascotWalk .35s ease-in-out infinite alternate!important}
+#map-mascot.running .mascot-svg{animation:mascotRun .2s ease-in-out infinite alternate!important}
+#map-mascot.dancing .mascot-svg{animation:mapDance .45s ease-in-out infinite!important}
+#map-mascot.sleeping .mascot-svg{animation:mascotNod 2s ease-in-out infinite!important}
+#map-mascot.stealing .mascot-svg{animation:mascotDance .25s ease-in-out infinite!important}
+@keyframes mascotWalk{from{transform:translateY(0) rotate(-3deg)}to{transform:translateY(-6px) rotate(3deg)}}
+@keyframes mascotRun{from{transform:translateY(0) rotate(-6deg) scaleX(1.05)}to{transform:translateY(-10px) rotate(6deg) scaleX(.95)}}
+#map-mascot.flipped.walking .mascot-svg{animation:mascotWalkF .35s ease-in-out infinite alternate!important}
+#map-mascot.flipped.running .mascot-svg{animation:mascotRunF .2s ease-in-out infinite alternate!important}
+@keyframes mascotWalkF{from{transform:scaleX(-1) translateY(0) rotate(-3deg)}to{transform:scaleX(-1) translateY(-6px) rotate(3deg)}}
+@keyframes mascotRunF{from{transform:scaleX(-1) translateY(0) rotate(-6deg)}to{transform:scaleX(-1) translateY(-10px) rotate(6deg)}}
+#map-mascot-shadow{width:50px;height:8px;
+  background:radial-gradient(ellipse,rgba(79,195,247,.4) 0%,transparent 70%);
+  border-radius:50%;margin-top:-4px;}
+#map-fake-cursor{position:fixed;z-index:9999;pointer-events:none;display:none;
+  font-size:20px;line-height:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,.5))}
+#map-mascot-bubble{
+  background:rgba(45,10,78,.97);border:2px solid var(--violet-neon);border-radius:14px;
+  padding:8px 14px;font-size:.75rem;font-weight:700;color:var(--lilac);
+  box-shadow:0 0 16px rgba(192,132,252,.4);
+  opacity:0;transition:opacity .3s;pointer-events:none;
+  position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);
+  max-width:210px;white-space:normal;text-align:center;line-height:1.4;min-width:120px}
+#map-mascot-bubble.show{opacity:1}
+#map-mascot-bubble::after{content:'';position:absolute;bottom:-9px;left:50%;transform:translateX(-50%);
+  border:8px solid transparent;border-top-color:var(--violet-neon);border-bottom:none}
+#map-mascot-zz{position:absolute;top:-18px;right:-10px;font-size:.9rem;font-weight:900;
+  color:var(--blue-crystal);opacity:0;transition:opacity .4s;pointer-events:none;
+  animation:zzFloat 1.8s ease-in-out infinite}
+#map-mascot-zz.show{opacity:1}
+@keyframes zzFloat{0%{transform:translateY(0) scale(1);opacity:1}100%{transform:translateY(-18px) scale(1.4);opacity:0}}
+
+/* ══════════════════════════
+   QUIZ
+══════════════════════════ */
+#screen-quiz{background:var(--bg);flex-direction:column;align-items:center;
+  justify-content:flex-start;padding:0;gap:0;color:#fff;overflow:hidden}
+.quiz-header{width:100%;display:flex;align-items:center;justify-content:space-between;
+  padding:10px 14px 8px;flex-shrink:0;background:rgba(0,0,0,.25);
+  border-bottom:2px solid rgba(255,255,255,.1);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:2}
+.quiz-back-btn{background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.2)!important;
+  color:#fff;font-size:.8rem;font-weight:800;padding:7px 14px;border-radius:var(--r-max);
+  text-transform:uppercase;transition:all .15s}
+.quiz-hdr-center{display:flex;flex-direction:column;align-items:center;gap:2px}
+.quiz-phase-lbl{font-size:clamp(.9rem,2.5vw,1.2rem);font-weight:900;color:#fff;letter-spacing:2px}
+.quiz-op-badge{font-size:.75rem;font-weight:800;padding:3px 12px;border-radius:var(--r-max);
+  border:2px solid currentColor;letter-spacing:1px}
+.quiz-score-wrap{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+.quiz-score{font-size:clamp(1rem,2.5vw,1.3rem);font-weight:900;color:var(--yellow);
+  text-shadow:0 0 10px rgba(250,204,21,.5)}
+.quiz-combo{font-size:.75rem;font-weight:800;color:var(--orange);opacity:0;transition:opacity .3s;letter-spacing:1px}
+.quiz-combo.visible{opacity:1}
+.quiz-combo.pop{animation:comboPop .4s var(--spring)}
+@keyframes comboPop{0%{transform:scale(1)}50%{transform:scale(1.4)}100%{transform:scale(1)}}
+
+/* Hint counter badge */
+.quiz-hint-counter{font-size:.7rem;font-weight:800;color:rgba(255,255,255,.5);letter-spacing:.5px;margin-top:1px}
+.quiz-hint-counter.has-hints{color:var(--blue-crystal)}
+
+.quiz-progress{width:100%;display:flex;align-items:center;justify-content:center;
+  gap:10px;padding:8px 20px 5px;flex-shrink:0}
+.progress-dot{width:clamp(26px,4.5vw,36px);height:clamp(26px,4.5vw,36px);border-radius:50%;
+  border:3px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);
+  display:flex;align-items:center;justify-content:center;
+  font-size:clamp(.65rem,1.4vw,.85rem);font-weight:800;color:rgba(255,255,255,.4);
+  transition:all .4s var(--spring)}
+.progress-dot.correct{background:var(--green);border-color:var(--green-v);color:#14532d;
+  box-shadow:0 0 12px rgba(134,239,172,.6);animation:dotOk .4s var(--spring)}
+@keyframes dotOk{0%{transform:scale(1)}50%{transform:scale(1.35)}100%{transform:scale(1)}}
+.progress-dot.wrong{background:var(--red);border-color:var(--red-v);color:#7f1d1d;
+  box-shadow:0 0 12px rgba(252,165,165,.5);animation:dotNo .4s ease}
+@keyframes dotNo{0%,100%{transform:rotate(0)}25%{transform:rotate(-10deg)}75%{transform:rotate(10deg)}}
+.progress-dot.current{border-color:var(--yellow);background:rgba(250,204,21,.15);color:var(--yellow);
+  box-shadow:0 0 10px rgba(250,204,21,.4);animation:dotPulse 1.2s ease-in-out infinite}
+@keyframes dotPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+
+.quiz-timer-wrap{width:100%;padding:0 14px 5px;flex-shrink:0}
+.quiz-timer-bar{width:100%;height:9px;background:rgba(255,255,255,.1);
+  border-radius:var(--r-max);overflow:hidden;border:2px solid rgba(255,255,255,.12)}
+.quiz-timer-fill{height:100%;border-radius:var(--r-max);
+  transition:width 1s linear,background-color .5s;
+  background:linear-gradient(90deg,var(--green),var(--blue))}
+.quiz-timer-fill.warn{background:linear-gradient(90deg,var(--yellow),var(--orange))}
+.quiz-timer-fill.danger{background:linear-gradient(90deg,var(--red),#ef4444);
+  animation:timerShake .3s ease-in-out infinite}
+@keyframes timerShake{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.25)}}
+
+.quiz-question-area{flex:1;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;padding:6px 14px;gap:10px;width:100%;max-width:700px;margin:0 auto}
+.quiz-eq-card{background:rgba(255,255,255,.1);border:3px solid rgba(255,255,255,.2);
+  border-radius:var(--r-lg);padding:14px 28px;text-align:center;
+  box-shadow:0 8px 32px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.15);
+  backdrop-filter:blur(8px);position:relative;overflow:hidden;
+  animation:cardIn .4s var(--spring);width:100%;max-width:380px}
+@keyframes cardIn{from{opacity:0;transform:translateY(-20px) scale(.9)}to{opacity:1;transform:none}}
+.quiz-eq-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--op-color,#67e8f9),transparent,var(--op-color,#67e8f9));opacity:.7}
+.quiz-op-icon{font-size:clamp(1.3rem,3vw,1.8rem);margin-bottom:3px;display:block}
+.quiz-equation{font-size:clamp(1.9rem,7vw,3.4rem);font-weight:900;color:#fff;
+  text-shadow:0 3px 0 rgba(0,0,0,.3),0 0 20px var(--op-color,#67e8f9);line-height:1;letter-spacing:4px}
+
+.quiz-options{display:grid;grid-template-columns:1fr 1fr;gap:clamp(8px,1.8vw,14px);width:100%;max-width:500px}
+.quiz-option{border:none;border-radius:var(--r-lg);padding:clamp(12px,2.8vw,18px) 10px;cursor:pointer;
+  font-size:clamp(1.3rem,3.8vw,1.9rem);font-weight:900;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:3px;position:relative;overflow:hidden;
+  transition:transform .15s var(--spring),box-shadow .15s,opacity .3s,filter .3s;
+  animation:optIn .4s var(--spring) both;border:4px solid rgba(0,0,0,.15);
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;-webkit-appearance:none}
+.quiz-option:nth-child(1){animation-delay:.05s}.quiz-option:nth-child(2){animation-delay:.1s}
+.quiz-option:nth-child(3){animation-delay:.15s}.quiz-option:nth-child(4){animation-delay:.2s}
+@keyframes optIn{from{opacity:0;transform:scale(.6) rotate(-5deg)}to{opacity:1;transform:none}}
+.quiz-option[data-opt="A"]{background:linear-gradient(135deg,#fde68a,#fbbf24);color:#78350f;box-shadow:0 6px 0 #b45309,0 8px 18px rgba(0,0,0,.25)}
+.quiz-option[data-opt="B"]{background:linear-gradient(135deg,#86efac,#34d399);color:#14532d;box-shadow:0 6px 0 #15803d,0 8px 18px rgba(0,0,0,.25)}
+.quiz-option[data-opt="C"]{background:linear-gradient(135deg,#f9a8d4,#f472b6);color:#831843;box-shadow:0 6px 0 #9d174d,0 8px 18px rgba(0,0,0,.25)}
+.quiz-option[data-opt="D"]{background:linear-gradient(135deg,#fdba74,#fb923c);color:#7c2d12;box-shadow:0 6px 0 #c2410c,0 8px 18px rgba(0,0,0,.25)}
+.quiz-option:hover:not(:disabled){transform:translateY(-3px) scale(1.03)}
+.quiz-option:active:not(:disabled){transform:translateY(3px) scale(.97)}
+.opt-letter{font-size:clamp(.58rem,1.3vw,.74rem);opacity:.6;font-weight:900;letter-spacing:2px;text-transform:uppercase}
+.quiz-option.correct-answer{animation:okPulse .5s var(--spring);filter:brightness(1.2)}
+@keyframes okPulse{0%{transform:scale(1)}40%{transform:scale(1.1)}100%{transform:scale(1)}}
+.quiz-option.wrong-answer{animation:noShake .5s ease;filter:brightness(.6) saturate(.5)}
+@keyframes noShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+/* Hint: opções erradas ficam cinzas, correta fica azul claro */
+.quiz-option.hint-wrong{opacity:.35;filter:grayscale(.8);cursor:not-allowed;transform:scale(.96)!important;pointer-events:none}
+.quiz-option.hint-correct{box-shadow:0 0 0 4px var(--blue-neon),0 6px 0 #0369a1!important;
+  filter:brightness(1.15) drop-shadow(0 0 10px rgba(79,195,247,.7))}
+.quiz-option:disabled{cursor:not-allowed}
+
+/* MASCOTE DO QUIZ - arrastável, fixo no canto */
+#quiz-mascot-wrap{
+  position:fixed;bottom:14px;right:14px;z-index:200;
+  display:none;flex-direction:column;align-items:center;gap:3px;
+  cursor:grab;user-select:none;-webkit-user-select:none;touch-action:none;
+  transition:filter .2s}
+#quiz-mascot-wrap:active{cursor:grabbing}
+#quiz-mascot-wrap .mascot-svg{width:clamp(60px,9vw,78px);height:auto;
+  filter:drop-shadow(0 4px 10px rgba(192,132,252,.5));transition:filter .2s}
+#quiz-mascot-wrap:hover .mascot-svg{filter:drop-shadow(0 4px 18px rgba(192,132,252,.9))}
+.quiz-drag-label{font-size:.58rem;font-weight:800;color:var(--violet-neon);letter-spacing:.5px;
+  text-transform:uppercase;opacity:.7;pointer-events:none;text-align:center}
+.quiz-drag-label.hidden{opacity:0}
+
+/* Balão do mascote no quiz */
+#quiz-mascot-bubble{
+  position:absolute;bottom:100%;right:0;margin-bottom:8px;
+  background:rgba(45,10,78,.97);border:2px solid var(--violet-neon);border-radius:14px;
+  padding:8px 14px;font-size:.74rem;font-weight:700;color:var(--lilac);
+  max-width:200px;white-space:normal;text-align:center;
+  box-shadow:0 0 16px rgba(192,132,252,.4);
+  opacity:0;pointer-events:none;transition:opacity .25s;z-index:201;
+  line-height:1.4}
+#quiz-mascot-bubble.show{opacity:1}
+#quiz-mascot-bubble.is-hint{border-color:var(--blue-neon);background:rgba(10,15,44,.97);
+  color:var(--blue-crystal);box-shadow:0 0 20px rgba(79,195,247,.5)}
+#quiz-mascot-bubble::after{content:'';position:absolute;bottom:-9px;right:18px;
+  border:8px solid transparent;border-top-color:var(--violet-neon);border-bottom:none}
+#quiz-mascot-bubble.is-hint::after{border-top-color:var(--blue-neon)}
+
+/* ══════════════════════════
+   POPUP
+══════════════════════════ */
+#popup-feedback{position:fixed;inset:0;z-index:500;display:flex;align-items:center;
+  justify-content:center;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);
+  -webkit-backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .25s}
+#popup-feedback.show{opacity:1;pointer-events:all}
+.popup-box{background:#1e1b4b;border-radius:28px;
+  padding:clamp(22px,5vw,34px) clamp(26px,6vw,46px);text-align:center;
+  max-width:340px;width:92%;position:relative;overflow:hidden;
+  box-shadow:0 24px 64px rgba(0,0,0,.5);animation:popIn .45s var(--spring)}
+@keyframes popIn{from{opacity:0;transform:scale(.5) rotate(-5deg)}to{opacity:1;transform:none}}
+.popup-box::before{content:'';position:absolute;inset:0;border-radius:28px;padding:3px;
+  background:linear-gradient(135deg,var(--popup-a,#86efac),var(--popup-b,#34d399));
+  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+.popup-emoji{font-size:clamp(2.5rem,6vw,3.5rem);display:block;margin-bottom:5px;
+  animation:emojiSpin .5s var(--spring)}
+@keyframes emojiSpin{from{transform:scale(0) rotate(-180deg)}to{transform:scale(1) rotate(0)}}
+.popup-title{font-size:clamp(1.5rem,4.5vw,2.2rem);font-weight:900;margin-bottom:5px;line-height:1}
+.popup-sub{font-size:clamp(.82rem,1.8vw,.95rem);color:rgba(255,255,255,.75);margin-bottom:14px;font-weight:600}
+.popup-correct{background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.15);
+  border-radius:var(--r-md);padding:7px 16px;font-size:.88rem;font-weight:700;
+  color:rgba(255,255,255,.8);margin-bottom:14px}
+.popup-correct span{color:var(--green);font-size:1.05rem}
+/* Botões do popup - em coluna */
+.popup-actions{display:flex;flex-direction:column;gap:10px;width:100%}
+.popup-btn{font-size:clamp(.95rem,2.5vw,1.15rem);font-weight:900;padding:13px 36px;
+  border:3px solid rgba(0,0,0,.15);border-radius:var(--r-max);width:100%;
+  box-shadow:0 5px 0 rgba(0,0,0,.3);transition:transform .12s,box-shadow .12s;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.popup-btn:hover{transform:translateY(-2px);box-shadow:0 7px 0 rgba(0,0,0,.3)}
+.popup-btn:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.3)}
+.popup-btn.victory{background:linear-gradient(135deg,#86efac,#22c55e);color:#14532d}
+.popup-btn.defeat{background:linear-gradient(135deg,#f9a8d4,#ec4899);color:#831843}
+.popup-btn.map-btn{background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.3)!important;
+  color:#fff;box-shadow:0 3px 0 rgba(0,0,0,.2);font-size:clamp(.85rem,2vw,1rem)}
+.popup-btn.map-btn:hover{background:rgba(255,255,255,.2)}
+
+/* ══════════════════════════
+   RESULT - SEM MASCOTE
+══════════════════════════ */
+#screen-result{background:var(--bg);padding:20px}
+.result-card{background:rgba(255,255,255,.07);border:3px solid rgba(255,255,255,.18);
+  border-radius:28px;padding:clamp(20px,4vw,36px) clamp(24px,5vw,48px);
+  display:flex;flex-direction:column;align-items:center;gap:14px;max-width:400px;width:100%;
+  box-shadow:0 16px 48px rgba(0,0,0,.4);backdrop-filter:blur(12px);
+  animation:resultIn .6s var(--spring)}
+@keyframes resultIn{from{opacity:0;transform:scale(.7) translateY(30px)}to{opacity:1;transform:none}}
+/* Emoji decorativo no lugar do mascote */
+.result-emoji-deco{font-size:clamp(3rem,8vw,5rem);animation:emojiSpin .6s var(--spring) both}
+.result-comment{font-size:clamp(1.3rem,4.5vw,1.9rem);font-weight:900;text-align:center;line-height:1.1;
+  animation:rComIn .5s var(--spring) .2s both}
+@keyframes rComIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+.result-stars{display:flex;gap:10px;align-items:center;animation:rStarsIn .5s var(--spring) .3s both}
+@keyframes rStarsIn{from{opacity:0;transform:scale(.5)}to{opacity:1;transform:none}}
+.result-star{font-size:clamp(1.8rem,5.5vw,2.6rem);opacity:.2;display:inline-block;transition:all .4s var(--spring)}
+.result-star.earned{opacity:1;animation:starShine 2s ease-in-out infinite}
+.result-star:nth-child(2).earned{animation-delay:.3s}
+.result-star:nth-child(3).earned{animation-delay:.6s}
+@keyframes starShine{0%,100%{transform:scale(1) rotate(-5deg);filter:drop-shadow(0 0 8px #facc15)}50%{transform:scale(1.2) rotate(5deg);filter:drop-shadow(0 0 18px #facc15) brightness(1.3)}}
+.result-summary{display:flex;gap:12px;align-items:center;animation:rSumIn .5s ease .4s both}
+@keyframes rSumIn{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:none}}
+.result-stat{display:flex;flex-direction:column;align-items:center;gap:2px;
+  background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.14);
+  border-radius:var(--r-md);padding:10px 16px;min-width:80px}
+.result-stat-val{font-size:clamp(1.1rem,3vw,1.5rem);font-weight:900;color:var(--yellow)}
+.result-stat-lbl{font-size:.68rem;font-weight:700;color:rgba(255,255,255,.5);letter-spacing:1px;text-transform:uppercase}
+.result-buttons{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;animation:rBtnsIn .5s ease .5s both;width:100%}
+@keyframes rBtnsIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+.btn-next{font-size:clamp(.9rem,2.2vw,1.1rem);font-weight:900;padding:13px 32px;
+  background:linear-gradient(135deg,#facc15,#f97316);color:#1c1917;
+  border:3px solid rgba(0,0,0,.15);border-radius:var(--r-max);box-shadow:0 6px 0 #b45309;
+  transition:transform .12s,box-shadow .12s;-webkit-tap-highlight-color:transparent}
+.btn-next:hover{transform:translateY(-2px);box-shadow:0 8px 0 #b45309}
+.btn-next:active{transform:translateY(4px);box-shadow:0 2px 0 #b45309}
+.btn-retry{font-size:clamp(.82rem,1.8vw,.95rem);font-weight:800;padding:11px 24px;
+  background:rgba(255,255,255,.1);color:#fff;border:2px solid rgba(255,255,255,.3)!important;
+  border-radius:var(--r-max);box-shadow:0 4px 0 rgba(0,0,0,.2);
+  transition:transform .12s,background .12s;-webkit-tap-highlight-color:transparent}
+.btn-retry:hover{transform:translateY(-2px);background:rgba(255,255,255,.2)}
+.btn-map-result{font-size:clamp(.82rem,1.8vw,.95rem);font-weight:800;padding:11px 24px;
+  background:rgba(79,195,247,.12);color:var(--blue-crystal);
+  border:2px solid rgba(79,195,247,.3)!important;border-radius:var(--r-max);
+  box-shadow:0 4px 0 rgba(0,0,0,.2);transition:transform .12s,background .12s;
+  -webkit-tap-highlight-color:transparent}
+.btn-map-result:hover{transform:translateY(-2px);background:rgba(79,195,247,.22)}
+
+/* FINAL */
+#screen-final{background:var(--bg);text-align:center;padding:20px;color:#fff}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:#2e3a55;border-radius:99px}
+*{scrollbar-width:thin;scrollbar-color:#2e3a55 var(--bg)}
+
+/* RESPONSIVE */
+@media(max-width:480px){
+  .home-deco{display:none}
+  .map-ops-bar{display:none}
+  .op-prog-bar{display:none}
+  .quiz-header{padding:7px 10px 5px}
+  .quiz-back-btn{font-size:.72rem;padding:6px 10px}
+  .quiz-options{gap:7px}
+  .quiz-option{padding:11px 7px;font-size:clamp(1.2rem,5vw,1.6rem)}
+  .result-buttons{flex-direction:column;align-items:center}
+  #quiz-mascot-wrap .mascot-svg{width:56px}
+}
+@media(max-height:640px){
+  .quiz-eq-card{padding:9px 18px}
+  .quiz-options{gap:5px}
+  .quiz-option{padding:9px 7px}
+  .result-card{gap:10px;padding:14px 20px}
+  .result-star{font-size:1.6rem}
+  .home-mascot-area{margin-bottom:12px}
+}
+@media(max-height:500px){
+  #home-mascot-wrap .mascot-svg{width:70px}
+  .home-speech-bubble{font-size:.72rem;padding:5px 12px}
+}
+</style>
+</head>
+<body>
+
+<canvas id="particles-canvas"></canvas>
+<canvas id="confetti-canvas"></canvas>
+<button id="audio-toggle">🔊</button>
+
+<!-- MASCOTE MAPA (interativo - anda pela tela) -->
+<div id="map-fake-cursor">🖱️</div>
+<div id="map-mascot">
+  <div id="map-mascot-bubble"></div>
+  <div id="map-mascot-svg-wrap"></div>
+  <div id="map-mascot-shadow"></div>
+  <div id="map-mascot-zz">💤</div>
+</div>
+
+<!-- MASCOTE QUIZ (arrastável) -->
+<div id="quiz-mascot-wrap">
+  <div id="quiz-mascot-bubble"></div>
+  <div id="quiz-mascot-svg-wrap"></div>
+  <span class="quiz-drag-label" id="quiz-drag-label">Arraste!</span>
+</div>
+
+<!-- HOME -->
+<div id="screen-home" class="screen">
+  <div class="home-content">
+    <div class="home-title-wrap">
+      <h1 class="home-title">MATH QUIZ</h1>
+      <p class="home-subtitle">✨ Desafio Numérico ✨</p>
+    </div>
+    <!-- Balão DEPOIS do título, mascote DEPOIS do balão -->
+    <div class="home-mascot-area">
+      <div class="home-speech-bubble" id="home-speech-bubble">Vamos contar! 🚀</div>
+      <div id="home-mascot-wrap"></div>
+      <div class="home-platform"></div>
+    </div>
+    <div class="home-buttons">
+      <button class="btn-play" onclick="Game.startGame()">▶ JOGAR!</button>
+      <button id="btn-continue" class="btn-continue" onclick="Game.continueGame()" style="display:none">↩ Continuar</button>
+      <p class="saved-info" id="saved-info" style="display:none"></p>
+    </div>
+  </div>
+  <div class="home-deco left">⭐<br>🌙<br>✨<br>💫</div>
+  <div class="home-deco right">💫<br>✨<br>🌟<br>⭐</div>
+  <span class="home-version">v3.0 · MATHQUIZ</span>
+</div>
+
+<!-- MAPA -->
+<div id="screen-map" class="screen">
+  <div class="map-header">
+    <button class="map-back-btn" onclick="Game.goHome()">← Início</button>
+    <div class="map-title-group">
+      <span class="map-title">🗺️ FASES</span>
+      <span class="map-score-badge">PONTOS: <span id="map-total-score">0</span></span>
+    </div>
+    <div class="map-ops-bar">
+      <div class="op-pip">+</div><div class="op-pip">−</div>
+      <div class="op-pip">×</div><div class="op-pip">÷</div>
+    </div>
+  </div>
+  <div class="map-scroll">
+    <div id="map-phases-container"></div>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div id="screen-quiz" class="screen">
+  <div class="quiz-header">
+    <button class="quiz-back-btn" onclick="Game.goMap()">← Mapa</button>
+    <div class="quiz-hdr-center">
+      <span class="quiz-phase-lbl" id="quiz-phase-label">FASE 1</span>
+      <span class="quiz-op-badge" id="quiz-op-badge">Adição</span>
+    </div>
+    <div class="quiz-score-wrap">
+      <span class="quiz-score" id="quiz-score">0</span>
+      <span class="quiz-combo" id="quiz-combo">🔥 x2</span>
+      <span class="quiz-hint-counter" id="quiz-hint-counter">💡 2 ajudas</span>
+    </div>
+  </div>
+  <div class="quiz-progress" id="quiz-progress"></div>
+  <div class="quiz-timer-wrap">
+    <div class="quiz-timer-bar">
+      <div class="quiz-timer-fill" id="quiz-timer-fill" style="width:100%"></div>
+    </div>
+  </div>
+  <div class="quiz-question-area">
+    <div class="quiz-eq-card" id="quiz-equation-card">
+      <span class="quiz-op-icon" id="quiz-op-icon">➕</span>
+      <div class="quiz-equation" id="quiz-equation">? + ?</div>
+    </div>
+    <div class="quiz-options" id="quiz-options-grid"></div>
+  </div>
+</div>
+
+<!-- RESULTADO - SEM MASCOTE, SEM INTERAÇÃO COM ELE -->
+<div id="screen-result" class="screen">
+  <div class="result-card">
+    <div class="result-emoji-deco" id="result-emoji-deco">🎉</div>
+    <div class="result-comment" id="result-comment">Incrível!</div>
+    <div class="result-stars" id="result-stars"></div>
+    <div class="result-summary">
+      <div class="result-stat"><span class="result-stat-val" id="result-hits">0/5</span><span class="result-stat-lbl">Acertos</span></div>
+      <div class="result-stat"><span class="result-stat-val" id="result-score-val">0</span><span class="result-stat-lbl">Pontos</span></div>
+    </div>
+    <div class="result-buttons">
+      <button class="btn-next" id="btn-next-phase">➡️ Próxima Fase!</button>
+      <button class="btn-retry" id="btn-retry">🔄 Tentar Novamente</button>
+      <button class="btn-map-result" id="btn-map-result">🗺️ Voltar ao Mapa</button>
+    </div>
+  </div>
+</div>
+
+<!-- FINAL -->
+<div id="screen-final" class="screen">
+  <div style="font-size:3rem;margin-bottom:12px">🏆</div>
+  <div style="font-size:2.5rem;color:var(--yellow);margin-bottom:8px;font-weight:900">PARABÉNS!</div>
+  <div style="font-size:1.1rem;color:rgba(255,255,255,.8);margin-bottom:24px">Você completou todos os 20 desafios!</div>
+  <button class="btn-play" onclick="Game.goHome()">🏠 Início</button>
+</div>
+
+<!-- POPUP -->
+<div id="popup-feedback">
+  <div class="popup-box" id="popup-box">
+    <span class="popup-emoji" id="popup-emoji">🎉</span>
+    <div class="popup-title" id="popup-title">Incrível!</div>
+    <div class="popup-sub" id="popup-subtitle">+100 pontos!</div>
+    <div class="popup-correct" id="popup-correct" style="display:none"></div>
+    <div class="popup-actions">
+      <button class="popup-btn victory" id="popup-next-btn">➡️ Próxima</button>
+      <button class="popup-btn map-btn" id="popup-map-btn">🗺️ Voltar ao Mapa</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════
+//  SAVE SYSTEM
+// ════════════════════════════════════════════
+const SAVE_KEY='mathquiz_v3';
+const SaveSystem={
+  def(){return{currentPhase:1,totalScore:0,audioEnabled:true,
+    phases:Array.from({length:20},(_,i)=>({id:i+1,unlocked:i===0,completed:false,stars:0,score:0}))}},
+  load(){try{const r=localStorage.getItem(SAVE_KEY);if(!r)return this.def();
+    const p=JSON.parse(r);return(!p.phases||p.phases.length!==20)?this.def():p}catch{return this.def()}},
+  save(s){try{localStorage.setItem(SAVE_KEY,JSON.stringify(s))}catch(e){}},
+  reset(){localStorage.removeItem(SAVE_KEY);return this.def()},
+  updatePhase(state,pid,stars,score){
+    const p=state.phases[pid-1];p.completed=true;
+    p.stars=Math.max(p.stars,stars);p.score=Math.max(p.score,score);
+    let nu=false;if(pid<20){if(!state.phases[pid].unlocked)nu=true;state.phases[pid].unlocked=true}
+    state.totalScore=state.phases.reduce((a,p)=>a+p.score,0);
+    state.currentPhase=Math.min(pid+1,20);this.save(state);return{state,newUnlock:nu}},
+  toggleAudio(s){s.audioEnabled=!s.audioEnabled;this.save(s);return s}
+};
+
+// ════════════════════════════════════════════
+//  GAME DATA
+// ════════════════════════════════════════════
+function rand(a,b){return Math.floor(Math.random()*(b-a+1))+a}
+function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]]}return arr}
+function genOpts(c){const s=new Set([c]);const cl=c+(Math.random()>.5?1:-1);if(cl>0)s.add(cl);
+  let t=0;while(s.size<4&&t++<60){const d=rand(-Math.max(3,Math.floor(c*.3)),Math.max(3,Math.floor(c*.3)));const v=c+d;if(v>0&&v!==c)s.add(v)}return shuffle([...s])}
+
+// Gera uma questão com base no operador, nível da fase e dificuldade da posição
+// diff: 0=hiper fácil, 1=fácil, 2=médio
+function genQDiff(op,phaseLevel,diff){
+  let a,b,c;
+  // Multipliers por dificuldade: 0=tiny, 1=small, 2=moderate
+  const mult=[0.3,0.6,1.0][diff];
+  if(op==='sum'){
+    const base=Math.max(2,Math.floor(phaseLevel*10*mult));
+    a=rand(1,base);b=rand(1,base);c=a+b;
+    return{expression:`${a} + ${b}`,correct:c,options:genOpts(c)}}
+  if(op==='sub'){
+    const base=Math.max(3,Math.floor(phaseLevel*15*mult));
+    a=rand(Math.ceil(base/2),base);b=rand(1,a);c=a-b;
+    return{expression:`${a} - ${b}`,correct:c,options:genOpts(c)}}
+  if(op==='mul'){
+    const top=Math.max(3,Math.floor((phaseLevel+3)*mult)+2);
+    a=rand(2,top);b=rand(2,top);c=a*b;
+    return{expression:`${a} × ${b}`,correct:c,options:genOpts(c)}}
+  // div
+  const top=Math.max(2,Math.floor((phaseLevel+2)*mult)+1);
+  b=rand(2,top);c=rand(2,top);a=b*c;
+  return{expression:`${a} ÷ ${b}`,correct:c,options:genOpts(c)}}
+
+// Mapa de posição (0-4) → dificuldade: 0,1 = hiper fácil; 2,3 = fácil; 4 = médio
+function posToDiff(pos){if(pos<=1)return 0;if(pos<=3)return 1;return 2}
+
+function getPhaseInfo(p){if(p<=5)return{operator:'sum',level:p};if(p<=10)return{operator:'sub',level:p-5};if(p<=15)return{operator:'mul',level:p-10};return{operator:'div',level:p-15}}
+function getPhaseQuestions(p){const{operator,level}=getPhaseInfo(p);return Array.from({length:5},(_,i)=>genQDiff(operator,level,posToDiff(i)))}
+function calcStars(h){return h>=5?3:h>=3?2:h>=1?1:0}
+function calcScore(h,t,c){return h*100+t+c}
+
+// ════════════════════════════════════════════
+//  AUDIO (Web Audio API - sem arquivos)
+// ════════════════════════════════════════════
+const AudioSystem={
+  ctx:null,enabled:true,
+  init(e){this.enabled=e!==false;this._btn()},
+  _ctx(){if(!this.ctx){try{this.ctx=new(window.AudioContext||window.webkitAudioContext)()}catch{return null}}
+    if(this.ctx.state==='suspended')this.ctx.resume().catch(()=>{});return this.ctx},
+  play(t){if(!this.enabled)return;const c=this._ctx();if(!c)return;
+    try{if(t==='victory'||t==='correct'){[[523,0],[659,100],[784,200]].forEach(([f,d])=>setTimeout(()=>this._tone(c,f,.15,'sine',.15),d))}
+    else if(t==='defeat'||t==='wrong'){[[220,0],[160,130]].forEach(([f,d])=>setTimeout(()=>this._tone(c,f,.2,'sawtooth',.08),d))}
+    else if(t==='unlock'){[523,659,784,1047].forEach((f,i)=>setTimeout(()=>this._tone(c,f,.12,'sine',.15),i*80))}
+    else if(t==='hint'){[[440,0],[550,120]].forEach(([f,d])=>setTimeout(()=>this._tone(c,f,.1,'sine',.12),d))}}catch{}},
+  _tone(c,f,d,tp,v){try{const o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);
+    o.type=tp;o.frequency.setValueAtTime(f,c.currentTime);
+    g.gain.setValueAtTime(v*.3,c.currentTime);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+d);
+    o.start(c.currentTime);o.stop(c.currentTime+d)}catch{}},
+  toggle(s){this.enabled=s.audioEnabled;this._btn()},
+  _btn(){const b=document.getElementById('audio-toggle');if(b)b.textContent=this.enabled?'🔊':'🔇'}
+};
+
+// ════════════════════════════════════════════
+//  PARTICLES
+// ════════════════════════════════════════════
+const Particles={
+  canvas:null,ctx:null,pts:[],
+  init(){this.canvas=document.getElementById('particles-canvas');if(!this.canvas)return;
+    this.ctx=this.canvas.getContext('2d');this.resize();this.spawn();this.loop();
+    window.addEventListener('resize',()=>{this.resize();this.spawn()})},
+  resize(){if(!this.canvas)return;this.canvas.width=window.innerWidth;this.canvas.height=window.innerHeight},
+  spawn(){const n=Math.min(45,Math.floor(window.innerWidth*window.innerHeight/18000));
+    const c=['#4fc3f7','#c084fc','#a8d4f5','#e9d5ff'];
+    this.pts=Array.from({length:n},()=>({x:Math.random()*window.innerWidth,y:Math.random()*window.innerHeight,
+      r:Math.random()*1.5+.5,color:c[Math.floor(Math.random()*c.length)],
+      sx:(Math.random()-.5)*.3,sy:(Math.random()-.5)*.3,a:Math.random()*.4+.15}))},
+  loop(){requestAnimationFrame(()=>this.loop());if(!this.ctx)return;
+    this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height);
+    this.pts.forEach(p=>{p.x+=p.sx;p.y+=p.sy;
+      if(p.x<0)p.x=this.canvas.width;if(p.x>this.canvas.width)p.x=0;
+      if(p.y<0)p.y=this.canvas.height;if(p.y>this.canvas.height)p.y=0;
+      this.ctx.beginPath();this.ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      this.ctx.fillStyle=p.color;this.ctx.globalAlpha=p.a;this.ctx.fill()});
+    this.ctx.globalAlpha=1}
+};
+
+// ════════════════════════════════════════════
+//  CONFETTI
+// ════════════════════════════════════════════
+const Confetti={
+  canvas:null,ctx:null,pts:[],running:false,
+  init(){this.canvas=document.getElementById('confetti-canvas');if(!this.canvas)return;
+    this.ctx=this.canvas.getContext('2d');
+    this.canvas.width=window.innerWidth;this.canvas.height=window.innerHeight;
+    window.addEventListener('resize',()=>{if(this.canvas){this.canvas.width=window.innerWidth;this.canvas.height=window.innerHeight}})},
+  burst(){if(!this.canvas)return;this.pts=[];
+    const c=['#facc15','#4fc3f7','#c084fc','#86efac','#f9a8d4','#fb923c'];
+    for(let i=0;i<110;i++)this.pts.push({x:window.innerWidth/2+(Math.random()-.5)*200,
+      y:window.innerHeight/2,vx:(Math.random()-.5)*14,vy:Math.random()*-12-4,
+      color:c[Math.floor(Math.random()*c.length)],size:Math.random()*8+4,
+      rot:Math.random()*360,rotV:(Math.random()-.5)*8,life:1,decay:Math.random()*.015+.008});
+    if(!this.running)this._loop()},
+  _loop(){this.running=true;if(!this.ctx)return;
+    this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height);
+    this.pts=this.pts.filter(p=>p.life>0);
+    this.pts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.35;p.rot+=p.rotV;p.life-=p.decay;
+      this.ctx.save();this.ctx.translate(p.x,p.y);this.ctx.rotate(p.rot*Math.PI/180);
+      this.ctx.globalAlpha=Math.max(0,p.life);this.ctx.fillStyle=p.color;
+      this.ctx.fillRect(-p.size/2,-p.size/4,p.size,p.size/2);this.ctx.restore()});
+    this.ctx.globalAlpha=1;
+    if(this.pts.length>0)requestAnimationFrame(()=>this._loop());
+    else{this.running=false;this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height)}}
+};
+
+// ════════════════════════════════════════════
+//  MASCOTE SVG BUILDER
+// ════════════════════════════════════════════
+const Mascot={
+  buildSVG(id,size){
+    const wmap={quiz:76,home:120,map:60,result:90};
+    const w=wmap[size]||76;
+    return`<svg id="${id}" class="mascot-svg" viewBox="0 0 100 120" width="${w}" height="${w*1.2}" xmlns="http://www.w3.org/2000/svg" style="overflow:visible">
+      <ellipse cx="50" cy="80" rx="26" ry="18" fill="#7b2fbf" opacity=".9"/>
+      <circle cx="50" cy="48" r="28" fill="#c084fc"/>
+      <circle cx="50" cy="48" r="28" fill="none" stroke="#9333ea" stroke-width="2" opacity=".5"/>
+      <ellipse id="${id}-bl" cx="33" cy="56" rx="7" ry="4" fill="#f9a8d4" opacity=".7"/>
+      <ellipse id="${id}-br" cx="67" cy="56" rx="7" ry="4" fill="#f9a8d4" opacity=".7"/>
+      <circle cx="40" cy="44" r="7" fill="#0a0f2c"/>
+      <circle cx="60" cy="44" r="7" fill="#0a0f2c"/>
+      <circle id="${id}-el" cx="40" cy="44" r="4" fill="#67e8f9"/>
+      <circle id="${id}-er" cx="60" cy="44" r="4" fill="#67e8f9"/>
+      <circle cx="42" cy="42" r="1.8" fill="white"/>
+      <circle cx="62" cy="42" r="1.8" fill="white"/>
+      <path id="${id}-mouth" d="M 38 59 Q 50 68 62 59" stroke="#4fc3f7" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <line x1="50" y1="20" x2="50" y2="10" stroke="#c084fc" stroke-width="2.5" stroke-linecap="round"/>
+      <circle cx="50" cy="8" r="4.5" fill="#4fc3f7"/>
+      <ellipse cx="18" cy="76" rx="9" ry="5" fill="#c084fc" transform="rotate(-20 18 76)"/>
+      <ellipse cx="82" cy="76" rx="9" ry="5" fill="#c084fc" transform="rotate(20 82 76)"/>
+      <ellipse cx="40" cy="98" rx="8" ry="6" fill="#7b2fbf"/>
+      <ellipse cx="60" cy="98" rx="8" ry="6" fill="#7b2fbf"/>
+    </svg>`;},
+  setMood(id,mood){
+    const m=document.getElementById(id+'-mouth');
+    const bl=document.getElementById(id+'-bl');
+    const br=document.getElementById(id+'-br');
+    if(!m)return;
+    switch(mood){
+      case'happy':m.setAttribute('d','M 36 58 Q 50 70 64 58');m.style.stroke='#86efac';
+        if(bl)bl.style.opacity='1';if(br)br.style.opacity='1';break;
+      case'sad':m.setAttribute('d','M 36 65 Q 50 56 64 65');m.style.stroke='#f9a8d4';
+        if(bl)bl.style.opacity='.15';if(br)br.style.opacity='.15';break;
+      case'thinking':m.setAttribute('d','M 42 61 Q 50 64 58 61');m.style.stroke='#4fc3f7';break;
+      case'dance':m.setAttribute('d','M 36 58 Q 50 72 64 58');m.style.stroke='#facc15';
+        const sv=document.getElementById(id);if(sv)sv.style.animation='mascotDance .35s ease 3';
+        setTimeout(()=>{const s=document.getElementById(id);if(s)s.style.animation=''},1200);break;
+      case'excited':m.setAttribute('d','M 34 56 Q 50 74 66 56');m.style.stroke='#facc15';
+        if(bl)bl.style.opacity='1';if(br)br.style.opacity='1';break;
+      default:m.setAttribute('d','M 38 59 Q 50 68 62 59');m.style.stroke='#4fc3f7';
+        if(bl)bl.style.opacity='.7';if(br)br.style.opacity='.7'}},
+  react(id,mood,dur){this.setMood(id,mood);setTimeout(()=>this.setMood(id,'idle'),dur||1500)}
+};
+
+// ════════════════════════════════════════════
+//  HOME SCREEN
+// ════════════════════════════════════════════
+const HomeScreen={
+  msgs:['Vamos contar! 🚀','Adoro matemática! 🧮','Você consegue! 💪','Pronto pra jogar? 🎮','Calcule comigo! ⚡','Seja um gênio! 🧠','Bora lá! 🌟'],
+  timer:null,
+  init(state){
+    const w=document.getElementById('home-mascot-wrap');
+    if(w){w.innerHTML=Mascot.buildSVG('home-mascot','home');
+      Mascot.setMood('home-mascot','idle');
+      const s=document.getElementById('home-mascot');
+      if(s)s.style.animation='charFloat 3s ease-in-out infinite'}
+    const hasP=state.phases.some(p=>p.completed);
+    const bc=document.getElementById('btn-continue'),si=document.getElementById('saved-info');
+    if(hasP){if(bc)bc.style.display='inline-flex';
+      if(si){si.style.display='block';si.innerHTML=`Fase <span>${state.currentPhase}</span> · <span>${state.totalScore}</span> pts`}}
+    else{if(bc)bc.style.display='none';if(si)si.style.display='none'}
+    clearInterval(this.timer);this._bbl();this.timer=setInterval(()=>this._bbl(),4500)},
+  _bbl(){const b=document.getElementById('home-speech-bubble');if(!b)return;
+    b.style.opacity='0';setTimeout(()=>{b.textContent=this.msgs[Math.floor(Math.random()*this.msgs.length)];b.style.opacity='1'},220)},
+  teardown(){clearInterval(this.timer)}
+};
+
+// ════════════════════════════════════════════
+//  MAP MASCOTE - INTERATIVO (anda, dança, rouba mouse)
+// ════════════════════════════════════════════
+const MapMascot={
+  el:null,bubble:null,zzEl:null,fakeCursor:null,
+  x:80,y:80,
+  stealing:false,stealDone:false,
+  mouseX:window.innerWidth/2,mouseY:window.innerHeight/2,
+  lastMouseMove:0,
+  _timers:[],_walkInterval:null,_bhTimer:null,_bubbleHide:null,_inactiveChecker:null,
+
+  phrases:{
+    idle:['Hmm, que fase escolher? 🤔','Matemática é demais! 🧮','Tô de olho em você! 👀','Bora jogar! 🎮','Oi! 👋'],
+    cheer:['Você tá mandando bem! 🌟','Continue assim! 🚀','Campeão(ã)! 🏆','Você consegue! 💪'],
+    challenge:['Essa fase tá te esperando! 🎯','Vai encarar? 😏','Bora desafiar? ⚡','Não tem medo! 🔥'],
+    sleep:['Zzz... 💤','*ronco* 😴'],
+    steal:['HEH HEH! PEGUEI! 😈','O mouse é meu agora! 🖱️','HAHAHA! 🎉'],
+    return:['Tá bem, tá bem... 😅','Toma o mouse! 😂','Foi mal! Hehe 😄'],
+    dance:['Boa música imaginária! 🎵','Adoro dançar! 💃','Baila comigo! 🕺'],
+    run:['OLHA EU CORRENDO! 🏃','Wheeeee! 💨','Velocidade! ⚡']
+  },
+
+  _say(ctx,dur){
+    if(!this.bubble)return;
+    const pool=this.phrases[ctx]||this.phrases.idle;
+    const msg=pool[Math.floor(Math.random()*pool.length)];
+    this.bubble.textContent=msg;
+    this.bubble.classList.add('show');
+    clearTimeout(this._bubbleHide);
+    this._bubbleHide=setTimeout(()=>{if(this.bubble)this.bubble.classList.remove('show')},dur||3000)},
+
+  // Remove TODAS as classes de estado e aplica nova
+  _setState(state){
+    if(!this.el)return;
+    this.el.classList.remove('walking','running','dancing','sleeping','stealing','flipped');
+    if(state==='walkL')this.el.classList.add('walking','flipped');
+    else if(state==='walkR')this.el.classList.add('walking');
+    else if(state==='runL')this.el.classList.add('running','flipped');
+    else if(state==='runR')this.el.classList.add('running');
+    else if(state==='dancing')this.el.classList.add('dancing');
+    else if(state==='stealing')this.el.classList.add('stealing');
+    else if(state==='sleeping')this.el.classList.add('sleeping')
+    // 'idle' = sem classe extra
+  },
+
+  _setSleep(on){
+    if(!this.el)return;
+    if(on){this._setState('sleeping');if(this.zzEl)this.zzEl.classList.add('show');Mascot.setMood('map-mascot','sad')}
+    else{this._setState('idle');if(this.zzEl)this.zzEl.classList.remove('show');Mascot.setMood('map-mascot','idle')}},
+
+  _pos(x,y){
+    if(!this.el)return;
+    const sx=Math.max(10,Math.min(window.innerWidth-90,x));
+    const sy=Math.max(10,Math.min(window.innerHeight-130,y));
+    this.el.style.left=sx+'px';
+    this.el.style.bottom=sy+'px';
+    this.x=sx;this.y=sy},
+
+  // Caminha até (tx,ty) — speed px por tick (30ms)
+  _walkTo(tx,ty,speed,onDone){
+    clearInterval(this._walkInterval);
+    const tsx=Math.max(10,Math.min(window.innerWidth-90,tx));
+    const tsy=Math.max(10,Math.min(window.innerHeight-130,ty));
+    this._walkInterval=setInterval(()=>{
+      if(!this.el){clearInterval(this._walkInterval);return}
+      const dx=tsx-this.x,dy=tsy-this.y;
+      const dist=Math.sqrt(dx*dx+dy*dy);
+      if(dist<speed+1){
+        this._pos(tsx,tsy);
+        clearInterval(this._walkInterval);
+        if(onDone)onDone();
+        return}
+      this._pos(this.x+dx/dist*speed,this.y+dy/dist*speed)
+    },30)},
+
+  // ── COMPORTAMENTOS ─────────────────────────────────────────
+  _doWalk(){
+    const tx=Math.random()*Math.max(100,window.innerWidth-100);
+    const ty=Math.random()*Math.max(60,180);
+    const fast=Math.random()>.55;
+    const goRight=tx>this.x;
+    this._setState(fast?(goRight?'runR':'runL'):(goRight?'walkR':'walkL'));
+    if(fast)this._say('run',2000);
+    this._walkTo(tx,ty,fast?9:2.8,()=>{
+      this._setState('idle');Mascot.setMood('map-mascot','idle');
+      this._schedule()})},
+
+  _doDance(){
+    this._setState('dancing');Mascot.setMood('map-mascot','excited');
+    this._say('dance',3000);
+    this._t(()=>{this._setState('idle');Mascot.setMood('map-mascot','idle');this._schedule()},3200)},
+
+  _doSleep(){
+    this._setSleep(true);
+    this._say('sleep',4000);
+    this._t(()=>{this._setSleep(false);this._schedule()},5500)},
+
+  _doCheer(){
+    this._setState('dancing');Mascot.setMood('map-mascot','happy');
+    this._say('cheer',3000);
+    this._t(()=>{this._setState('idle');Mascot.setMood('map-mascot','idle');this._schedule()},3200)},
+
+  _doIdle(){
+    this._setState('idle');Mascot.setMood('map-mascot','thinking');
+    const r=Math.random();
+    if(r<.5)this._say('idle',3000);
+    else this._say('challenge',3000);
+    this._schedule()},
+
+  _schedule(){
+    clearTimeout(this._bhTimer);
+    if(this.stealing)return;
+    this._bhTimer=setTimeout(()=>{
+      if(this.stealing)return;
+      const r=Math.random();
+      if(r<.38)this._doWalk();
+      else if(r<.56)this._doDance();
+      else if(r<.70)this._doSleep();
+      else if(r<.84)this._doCheer();
+      else this._doIdle()
+    },3500+Math.random()*5000)},
+
+  // ── ROUBO DO MOUSE (uma vez por sessão, só desktop) ────────
+  _initMouseSteal(){
+    if(this.stealDone||('ontouchstart' in window))return;
+    this.lastMouseMove=Date.now();
+    document.addEventListener('mousemove',e=>{
+      this.mouseX=e.clientX;this.mouseY=e.clientY;
+      this.lastMouseMove=Date.now();
+      if(this.el&&this.el.classList.contains('sleeping'))this._setSleep(false)});
+    this._inactiveChecker=setInterval(()=>{
+      if(this.stealDone||this.stealing)return;
+      if(Date.now()-this.lastMouseMove>=10000)this._stealMouse()
+    },1000)},
+
+  _stealMouse(){
+    if(this.stealDone||this.stealing)return;
+    this.stealing=true;
+    clearTimeout(this._bhTimer);clearInterval(this._walkInterval);
+    clearInterval(this._inactiveChecker);
+    // Cursor em coordenadas bottom (da base da tela)
+    const tx=this.mouseX-36;
+    const ty=window.innerHeight-this.mouseY-80;
+    const goRight=tx>this.x;
+    this._setState(goRight?'runR':'runL');
+    this._walkTo(tx,ty,11,()=>{
+      // Chegou no cursor!
+      this._setState('stealing');Mascot.setMood('map-mascot','excited');
+      this._say('steal',3000);
+      // Esconde cursor real, mostra falso
+      if(this.fakeCursor){
+        this.fakeCursor.style.left=this.mouseX+'px';
+        this.fakeCursor.style.top=this.mouseY+'px';
+        this.fakeCursor.style.display='block'}
+      document.body.style.cursor='none';
+      // Anima cursor falso em espirais por 4s
+      let t=0;
+      const ox=this.mouseX,oy=this.mouseY;
+      const anim=setInterval(()=>{
+        t+=0.13;
+        const nx=Math.max(20,Math.min(window.innerWidth-30,ox+Math.sin(t*1.8)*130+Math.cos(t*.7)*55));
+        const ny=Math.max(20,Math.min(window.innerHeight-30,oy+Math.cos(t*1.4)*90+Math.sin(t*1.1)*45));
+        if(this.fakeCursor){this.fakeCursor.style.left=nx+'px';this.fakeCursor.style.top=ny+'px'}
+        // Mascote segue cursor falso
+        this._pos(nx-36,window.innerHeight-ny-80)
+      },50);
+      // Após 4s, devolve
+      this._t(()=>{
+        clearInterval(anim);
+        document.body.style.cursor='';
+        if(this.fakeCursor)this.fakeCursor.style.display='none';
+        this.stealing=false;this.stealDone=true;
+        this._setState('idle');Mascot.setMood('map-mascot','happy');
+        this._say('return',3000);
+        this._t(()=>this._schedule(),2000)
+      },4000)})},
+
+  _t(fn,ms){const id=setTimeout(fn,ms);this._timers.push(id);return id},
+
+  // ── INIT / DESTROY ─────────────────────────────────────────
+  init(state){
+    this.el=document.getElementById('map-mascot');
+    this.bubble=document.getElementById('map-mascot-bubble');
+    this.zzEl=document.getElementById('map-mascot-zz');
+    this.fakeCursor=document.getElementById('map-fake-cursor');
+    const w=document.getElementById('map-mascot-svg-wrap');
+    if(!this.el||!w)return;
+
+    // Monta o SVG
+    w.innerHTML=Mascot.buildSVG('map-mascot','map');
+    Mascot.setMood('map-mascot','idle');
+
+    // Garante estado limpo
+    this.stealing=false;
+    this._setState('idle');
+    if(this.zzEl)this.zzEl.classList.remove('show');
+
+    // Posição inicial - canto inferior esquerdo
+    this.x=80;this.y=80;
+    this.el.style.left=this.x+'px';
+    this.el.style.bottom=this.y+'px';
+    // Display explícito
+    this.el.style.display='flex';
+    this.el.style.opacity='1';
+
+    // Frase de boas-vindas
+    const hasP=state&&state.phases&&state.phases.some(p=>p.completed);
+    this._t(()=>this._say(hasP?'cheer':'idle',3000),800);
+
+    // Inicia comportamentos autônomos
+    this._schedule();
+    this._initMouseSteal()},
+
+  destroy(){
+    clearTimeout(this._bhTimer);clearInterval(this._walkInterval);
+    clearInterval(this._inactiveChecker);clearTimeout(this._bubbleHide);
+    this._timers.forEach(id=>clearTimeout(id));this._timers=[];
+    document.body.style.cursor='';
+    if(this.fakeCursor)this.fakeCursor.style.display='none';
+    if(this.zzEl)this.zzEl.classList.remove('show');
+    if(this.el){this.el.classList.remove('walking','running','dancing','sleeping','stealing','flipped');this.el.style.display='none'}}
+};
+// ════════════════════════════════════════════
+//  MAP SCREEN
+// ════════════════════════════════════════════
+const MapScreen={
+  OPS:[
+    {id:'sum',label:'Adição',symbol:'+',phases:[1,2,3,4,5]},
+    {id:'sub',label:'Subtração',symbol:'−',phases:[6,7,8,9,10]},
+    {id:'mul',label:'Multiplicação',symbol:'×',phases:[11,12,13,14,15]},
+    {id:'div',label:'Divisão',symbol:'÷',phases:[16,17,18,19,20]}],
+  init(state){this._render(state);MapMascot.init(state)},
+  _render(state){
+    const c=document.getElementById('map-phases-container');
+    const s=document.getElementById('map-total-score');
+    if(!c)return;if(s)s.textContent=state.totalScore||0;
+    c.innerHTML=this._build(state);this._bind()},
+  _build(state){return this.OPS.map((op,idx)=>{
+    const done=op.phases.filter(id=>state.phases[id-1].completed).length;
+    const pct=(done/5)*100;
+    const cards=op.phases.map(pid=>{
+      const ph=state.phases[pid-1];
+      const locked=!ph.unlocked,comp=ph.completed,cur=pid===state.currentPhase&&!comp;
+      let cls=locked?'locked':comp?'completed':'available';if(cur)cls+=' current';
+      const stars=[1,2,3].map(i=>`<span class="star ${i<=ph.stars?'filled':''}">★</span>`).join('');
+      const inner=locked?`<span class="phase-lock">🔒</span>`:`<span class="phase-num">${pid}</span><div class="phase-stars">${stars}</div>`;
+      return`<div class="phase-card ${cls}" data-phase="${pid}">${inner}</div>`}).join('');
+    const div=idx<3?'<div class="op-divider"></div>':'';
+    return`<div class="operator-section" style="animation-delay:${idx*.1}s">
+      <div class="op-header">
+        <div class="op-icon ${op.id}">${op.symbol}</div>
+        <div class="op-info"><span class="op-name">${op.label}</span><span class="op-prog-txt">${done}/5 completas</span></div>
+        <div class="op-prog-bar"><div class="op-prog-fill ${op.id}" style="width:${pct}%"></div></div>
+      </div>
+      <div class="phases-grid">${cards}</div>
+    </div>${div}`}).join('')},
+  _bind(){document.querySelectorAll('#map-phases-container .phase-card:not(.locked)').forEach(c=>{
+    // Clona para remover listeners duplicados antes de adicionar novos
+    const nc=c.cloneNode(true);c.parentNode.replaceChild(nc,c);
+    nc.addEventListener('click',()=>Game.startPhase(parseInt(nc.dataset.phase)));
+    nc.addEventListener('touchend',e=>{e.preventDefault();e.stopPropagation();Game.startPhase(parseInt(nc.dataset.phase))})})},
+  refresh(state){this._render(state);this._bind()}
+};
+
+// ════════════════════════════════════════════
+//  QUIZ MASCOTE (arrastável, só no quiz)
+// ════════════════════════════════════════════
+const QuizMascot={
+  el:null,bubble:null,label:null,
+  dragging:false,startX:0,startY:0,origRight:14,origBottom:14,
+  dropped:false,hintUsed:0,maxHints:2,
+  animTimer:null,bubbleTimer:null,
+  // Falas durante a fase (curtas, infantis)
+  idleMsgs:['hmm, pensa bem 🤔','você consegue! 💪','vamos calcular! 🧮','tenta mais um pouquinho! 😊','quase lá! ✨','boa sorte! 🌟'],
+  dragMsgs:['Me arrasta até a pergunta! 👆','Solta em cima da pergunta! 🎯','Pode me arrastar! 🤗'],
+
+  init(){
+    this.el=document.getElementById('quiz-mascot-wrap');
+    this.bubble=document.getElementById('quiz-mascot-bubble');
+    this.label=document.getElementById('quiz-drag-label');
+    const w=document.getElementById('quiz-mascot-svg-wrap');
+    if(!this.el||!w)return;
+    w.innerHTML=Mascot.buildSVG('quiz-mascot','quiz');
+    this._corner();Mascot.setMood('quiz-mascot','thinking');
+    this._bind();this._startIdleAnims()},
+
+  reset(){
+    this.dropped=false;this.hintUsed=0;
+    this._corner();
+    Mascot.setMood('quiz-mascot','thinking');
+    this._startIdleAnims();this._startIdleBubbles();
+    this._updateHintCounter()},
+
+  _corner(){
+    if(!this.el)return;
+    this.el.style.transition='right .4s var(--spring), bottom .4s var(--spring)';
+    this.el.style.position='fixed';
+    this.el.style.right=this.origRight+'px';
+    this.el.style.bottom=this.origBottom+'px';
+    this.el.style.left='auto';
+    this.el.style.top='auto';
+    setTimeout(()=>{if(this.el)this.el.style.transition=''},450)},
+
+  _updateHintCounter(){
+    const el=document.getElementById('quiz-hint-counter');
+    if(!el)return;
+    const left=this.maxHints-this.hintUsed;
+    el.textContent=left>0?`💡 ${left} ajuda${left>1?'s':''}`:' sem ajudas';
+    el.className='quiz-hint-counter'+(left>0?' has-hints':'')},
+
+  // Animações leves e esporádicas durante a fase
+  _startIdleAnims(){
+    clearTimeout(this.animTimer);
+    const cycle=()=>{
+      if(this.dragging||this.dropped)return;
+      const r=Math.random();
+      const svg=document.getElementById('quiz-mascot');if(!svg)return;
+      if(r<.3){svg.style.animation='mascotWiggle .5s ease';setTimeout(()=>svg.style.animation='charFloat 3s ease-in-out infinite',550)}
+      else if(r<.5){svg.style.animation='mascotNod .4s ease';setTimeout(()=>svg.style.animation='charFloat 3s ease-in-out infinite',500)}
+      else{svg.style.animation='charFloat 3s ease-in-out infinite'}
+      this.animTimer=setTimeout(cycle,6000+Math.random()*8000)};
+    const svg=document.getElementById('quiz-mascot');
+    if(svg)svg.style.animation='charFloat 3s ease-in-out infinite';
+    this.animTimer=setTimeout(cycle,5000+Math.random()*6000)},
+
+  // Frases leves e ocasionais (não durante a dica)
+  _startIdleBubbles(){
+    clearInterval(this.bubbleTimer);
+    this.bubbleTimer=setInterval(()=>{
+      if(!this.dragging&&!this.dropped&&!this.el.style.display==='none'){
+        this._showBubble(this.idleMsgs[Math.floor(Math.random()*this.idleMsgs.length)],false,3500)}},
+      10000+Math.random()*8000)},
+
+  _showBubble(text,isHint,dur){
+    if(!this.bubble)return;
+    this.bubble.textContent=text;
+    this.bubble.className='show'+(isHint?' is-hint':'');
+    if(dur)setTimeout(()=>{if(this.bubble)this.bubble.className=''},dur)},
+
+  _hideBubble(){if(this.bubble)this.bubble.className=''},
+
+  _bind(){
+    if(!this.el)return;
+    // Mouse
+    this.el.addEventListener('mousedown',e=>{e.preventDefault();this._startDrag(e.clientX,e.clientY)});
+    document.addEventListener('mousemove',e=>{if(this.dragging)this._moveDrag(e.clientX,e.clientY)});
+    document.addEventListener('mouseup',e=>{if(this.dragging)this._endDrag(e.clientX,e.clientY)});
+    // Touch
+    this.el.addEventListener('touchstart',e=>{e.preventDefault();const t=e.touches[0];this._startDrag(t.clientX,t.clientY)},{passive:false});
+    document.addEventListener('touchmove',e=>{if(!this.dragging)return;e.preventDefault();const t=e.touches[0];this._moveDrag(t.clientX,t.clientY)},{passive:false});
+    document.addEventListener('touchend',e=>{if(this.dragging){const t=e.changedTouches[0];this._endDrag(t.clientX,t.clientY)}})},
+
+  _startDrag(cx,cy){
+    if(this.dropped)return;
+    this.dragging=true;
+    const r=this.el.getBoundingClientRect();
+    this.startX=cx-r.left;this.startY=cy-r.top;
+    this.el.style.transition='none';this.el.style.cursor='grabbing';
+    clearTimeout(this.animTimer);clearInterval(this.bubbleTimer);
+    const svg=document.getElementById('quiz-mascot');if(svg)svg.style.animation='none';
+    Mascot.setMood('quiz-mascot','happy');
+    // Fala ao ser pego
+    const msg=this.dragMsgs[Math.floor(Math.random()*this.dragMsgs.length)];
+    this._showBubble(msg,false)},
+
+  _moveDrag(cx,cy){
+    if(!this.dragging)return;
+    this.el.style.position='fixed';
+    this.el.style.left=(cx-this.startX)+'px';
+    this.el.style.top=(cy-this.startY)+'px';
+    this.el.style.right='auto';this.el.style.bottom='auto'},
+
+  _endDrag(cx,cy){
+    if(!this.dragging)return;
+    this.dragging=false;this.el.style.cursor='grab';
+    // Checa se soltou na pergunta
+    const card=document.getElementById('quiz-equation-card');
+    if(card){
+      const r=card.getBoundingClientRect();
+      const margin=80;
+      const hit=cx>=r.left-margin&&cx<=r.right+margin&&cy>=r.top-margin&&cy<=r.bottom+margin;
+      if(hit){this._activateHint();return}}
+    // Fora da pergunta — volta ao canto
+    this._hideBubble();
+    this._corner();
+    Mascot.setMood('quiz-mascot','thinking');
+    this._startIdleAnims();
+    setTimeout(()=>this._startIdleBubbles(),2000)},
+
+  _activateHint(){
+    if(this.hintUsed>=this.maxHints){
+      // Sem ajudas restantes
+      this._corner();
+      this._showBubble('Já usei todas as ajudas desse nível! 😅',false,3500);
+      Mascot.setMood('quiz-mascot','sad');
+      setTimeout(()=>{Mascot.setMood('quiz-mascot','thinking');this._startIdleAnims();this._startIdleBubbles()},3600);
+      return}
+
+    // Tem ajudas — ativa
+    this.hintUsed++;
+    const left=this.maxHints-this.hintUsed;
+    // Posiciona perto da pergunta
+    const card=document.getElementById('quiz-equation-card');
+    if(card){
+      const r=card.getBoundingClientRect();
+      this.el.style.transition='none';
+      this.el.style.position='fixed';
+      this.el.style.left=(r.right-85)+'px';
+      this.el.style.top=(r.bottom-20)+'px';
+      this.el.style.right='auto';this.el.style.bottom='auto'}
+
+    // Fala explicando o sistema e a dica
+    const hintMsg=left>0
+      ?`Deixa eu ajudar! Ainda tenho ${left} ajuda${left>1?'s':''} sobrando! 🌟`
+      :'Última ajuda! Use bem! 💫';
+    this._showBubble(hintMsg,true);
+    Mascot.setMood('quiz-mascot','excited');
+    AudioSystem.play('hint');
+
+    // Aplica efeito visual: erradas ficam cinzas, correta fica azul
+    QuizScreen.applyHintVisual();
+
+    this._updateHintCounter();
+
+    // Depois de 5s: para falar e volta ao canto
+    setTimeout(()=>{
+      this._hideBubble();
+      this._corner();
+      Mascot.setMood('quiz-mascot','thinking');
+      this._startIdleAnims();this._startIdleBubbles()},5000)},
+
+  destroy(){
+    clearTimeout(this.animTimer);clearInterval(this.bubbleTimer);
+    if(this.el)this.el.style.display='none'}
+};
+
+// ════════════════════════════════════════════
+//  QUIZ SCREEN
+// ════════════════════════════════════════════
+const QuizScreen={
+  phaseId:null,questions:[],current:0,score:0,combo:0,maxCombo:0,hits:0,
+  timerVal:20,timerMax:20,timerInterval:null,answered:false,opCfg:null,dotStates:[],
+  cfgs:{
+    sum:{color:'#67e8f9',label:'Adição',icon:'➕',badgeColor:'#0c4a6e',textColor:'#67e8f9'},
+    sub:{color:'#c084fc',label:'Subtração',icon:'➖',badgeColor:'#3b0764',textColor:'#c084fc'},
+    mul:{color:'#f9a8d4',label:'Multiplicação',icon:'✖️',badgeColor:'#500724',textColor:'#f9a8d4'},
+    div:{color:'#86efac',label:'Divisão',icon:'➗',badgeColor:'#052e16',textColor:'#86efac'}},
+  ok:['Incrível! 🌟','Arrasou! 🎉','Perfeito! ✨','Mandou bem! 🚀','Genial! 🧠','Que talento! 💡'],
+  no:['Quase lá! 💪','Não desista! 🤗','Da próxima vai! ⭐','Erro faz parte! 😊'],
+
+  init(phaseId){
+    this.phaseId=phaseId;this.questions=getPhaseQuestions(phaseId);
+    this.current=0;this.score=0;this.combo=0;this.maxCombo=0;this.hits=0;
+    this.answered=false;this.dotStates=Array(5).fill('pending');
+    this.opCfg=this.cfgs[getPhaseInfo(phaseId).operator];
+    this._theme();this._prog();this._scoreEl();
+    QuizMascot.reset();this._load()},
+
+  _theme(){
+    const q=document.getElementById('screen-quiz');if(q)q.style.setProperty('--op-color',this.opCfg.color);
+    const b=document.getElementById('quiz-op-badge');
+    if(b){b.textContent=this.opCfg.label;b.style.background=this.opCfg.badgeColor;
+      b.style.color=this.opCfg.textColor;b.style.borderColor=this.opCfg.color}
+    const l=document.getElementById('quiz-phase-label');if(l)l.textContent=`FASE ${this.phaseId}`},
+
+  _prog(){
+    const c=document.getElementById('quiz-progress');if(!c)return;c.innerHTML='';
+    for(let i=0;i<5;i++){const d=document.createElement('div');d.className='progress-dot';
+      const st=this.dotStates[i];
+      if(st==='correct'){d.classList.add('correct');d.textContent='✓'}
+      else if(st==='wrong'){d.classList.add('wrong');d.textContent='✗'}
+      else if(i===this.current){d.classList.add('current');d.textContent=i+1}
+      else d.textContent=i+1;c.appendChild(d)}},
+
+  _scoreEl(){
+    const e=document.getElementById('quiz-score');if(e)e.textContent=this.score;
+    const c=document.getElementById('quiz-combo');if(c){
+      if(this.combo>=2){c.textContent=`🔥 x${this.combo}`;c.classList.add('visible');
+        c.classList.remove('pop');requestAnimationFrame(()=>c.classList.add('pop'))}
+      else c.classList.remove('visible')}},
+
+  _load(){
+    this.answered=false;
+    // Remove hints visuais anteriores
+    document.querySelectorAll('.quiz-option').forEach(b=>{
+      b.classList.remove('hint-wrong','hint-correct');b.disabled=false});
+    const q=this.questions[this.current];if(!q)return;
+    const e=document.getElementById('quiz-equation');if(e)e.textContent=q.expression;
+    const ic=document.getElementById('quiz-op-icon');if(ic)ic.textContent=this.opCfg.icon;
+    const g=document.getElementById('quiz-options-grid');
+    if(g){g.innerHTML='';['A','B','C','D'].forEach((ltr,i)=>{
+      const btn=document.createElement('button');
+      btn.className='quiz-option';btn.dataset.opt=ltr;
+      btn.dataset.value=String(q.options[i]);
+      btn.innerHTML=`<span class="opt-letter">${ltr}</span>${q.options[i]}`;
+      // Usa apenas touchend em mobile, click em desktop — evita duplo disparo
+      let _handled=false;
+      const handle=()=>{if(_handled)return;_handled=true;this._select(btn,q.options[i],q.correct)};
+      btn.addEventListener('touchend',ev=>{ev.preventDefault();handle()},{passive:false});
+      btn.addEventListener('click',()=>handle());
+      g.appendChild(btn)})}
+    Mascot.setMood('quiz-mascot','thinking');
+    this._startTimer()},
+
+  // Aplica visual da dica: erradas ficam cinzas, correta azul
+  applyHintVisual(){
+    const q=this.questions[this.current];if(!q)return;
+    document.querySelectorAll('.quiz-option').forEach(btn=>{
+      if(parseInt(btn.dataset.value)===q.correct){btn.classList.add('hint-correct')}
+      else{btn.classList.add('hint-wrong');btn.disabled=true}})},
+
+  _startTimer(){clearInterval(this.timerInterval);this.timerVal=this.timerMax;this._timerBar();
+    this.timerInterval=setInterval(()=>{this.timerVal--;this._timerBar();
+      if(this.timerVal<=0){clearInterval(this.timerInterval);if(!this.answered)this._timeUp()}},1000)},
+
+  _timerBar(){const f=document.getElementById('quiz-timer-fill');if(!f)return;
+    const p=(this.timerVal/this.timerMax)*100;f.style.width=p+'%';
+    f.classList.remove('warn','danger');
+    if(p<=30)f.classList.add('danger');else if(p<=55)f.classList.add('warn')},
+
+  _timeUp(){this.answered=true;this.combo=0;this.dotStates[this.current]='wrong';
+    document.querySelectorAll('.quiz-option').forEach(b=>b.disabled=true);
+    this._prog();this._scoreEl();Mascot.react('quiz-mascot','sad',1500);
+    const q=this.questions[this.current];
+    setTimeout(()=>this._showPopup(false,q.correct,q.expression,true),450)},
+
+  _select(btn,value,correct){
+    if(this.answered)return;
+    this.answered=true;clearInterval(this.timerInterval);
+    const ok=Number(value)===Number(correct);
+    document.querySelectorAll('.quiz-option').forEach(b=>{b.disabled=true;
+      if(parseInt(b.dataset.value)===correct)b.classList.add('correct-answer')});
+    if(!ok)btn.classList.add('wrong-answer');
+    this.dotStates[this.current]=ok?'correct':'wrong';this._prog();
+    if(ok){this.hits++;this.combo++;this.maxCombo=Math.max(this.maxCombo,this.combo);
+      const tb=Math.floor((this.timerVal/this.timerMax)*50);
+      const cb=this.combo>=3?(this.combo-2)*20:0;this.score+=100+tb+cb;
+      AudioSystem.play('victory');Mascot.react('quiz-mascot','dance',1200)}
+    else{this.combo=0;AudioSystem.play('defeat');Mascot.react('quiz-mascot','sad',1200)}
+    this._scoreEl();
+    setTimeout(()=>{const q=this.questions[this.current];this._showPopup(ok,correct,q.expression,false)},600)},
+
+  _showPopup(ok,correct,expr,timeout){
+    const popup=document.getElementById('popup-feedback');
+    const box=document.getElementById('popup-box');
+    if(!popup||!box)return;
+    const pool=ok?this.ok:this.no;
+    const msg=pool[Math.floor(Math.random()*pool.length)];
+    const ee=document.getElementById('popup-emoji');
+    const te=document.getElementById('popup-title');
+    const se=document.getElementById('popup-subtitle');
+    const ce=document.getElementById('popup-correct');
+    if(ee)ee.textContent=ok?'🎉':(timeout?'⏰':'😅');
+    if(te){te.textContent=ok?msg:(timeout?'Tempo esgotado!':msg);te.style.color=ok?'#86efac':'#f9a8d4'}
+    if(se)se.textContent=ok?'Muito bem! Continue assim!':'A resposta correta era:';
+    if(ce){ce.style.display=ok?'none':'block';if(!ok)ce.innerHTML=`${expr} = <span>${correct}</span>`}
+    box.style.setProperty('--popup-a',ok?'#86efac':'#f9a8d4');
+    box.style.setProperty('--popup-b',ok?'#22c55e':'#ec4899');
+    // Botão próxima / resultado
+    const nb=document.getElementById('popup-next-btn');
+    const mb=document.getElementById('popup-map-btn');
+    const isLast=this.current===4;
+    if(nb){nb.textContent=isLast?'🏆 Ver Resultado':'➡️ Próxima';
+      nb.className=`popup-btn ${ok?'victory':'defeat'}`;
+      const nn=nb.cloneNode(true);nb.parentNode.replaceChild(nn,nb);
+      let _nh=false;const _nf=()=>{if(_nh)return;_nh=true;this._nextFromPopup()};
+      nn.addEventListener('touchend',e=>{e.preventDefault();_nf()},{passive:false});
+      nn.addEventListener('click',()=>_nf())}
+    if(mb){const mm=mb.cloneNode(true);mb.parentNode.replaceChild(mm,mb);
+      let _mh=false;const _mf=()=>{if(_mh)return;_mh=true;this._mapFromPopup()};
+      mm.addEventListener('touchend',e=>{e.preventDefault();_mf()},{passive:false});
+      mm.addEventListener('click',()=>_mf())}
+    popup.classList.add('show')},
+
+  _nextFromPopup(){
+    document.getElementById('popup-feedback')?.classList.remove('show');
+    const next=this.current+1;
+    if(next>=5){setTimeout(()=>this._finish(),250)}
+    else{this.current=next;setTimeout(()=>this._load(),350)}},
+
+  _mapFromPopup(){
+    document.getElementById('popup-feedback')?.classList.remove('show');
+    clearInterval(this.timerInterval);
+    // Salva o progresso atual antes de voltar ao mapa
+    // (conta os acertos feitos até agora, incluindo a questão atual)
+    const cb=this.maxCombo>=3?(this.maxCombo-2)*30:0;
+    Game.finishPhaseAndGoMap(this.phaseId,this.hits,0,cb)},
+
+  _finish(){clearInterval(this.timerInterval);
+    const cb=this.maxCombo>=3?(this.maxCombo-2)*30:0;
+    Game.finishPhase(this.phaseId,this.hits,0,cb)},
+
+  destroy(){clearInterval(this.timerInterval);
+    document.getElementById('popup-feedback')?.classList.remove('show')}
+};
+
+// ════════════════════════════════════════════
+//  RESULT SCREEN (SEM MASCOTE)
+// ════════════════════════════════════════════
+const ResultScreen={
+  comments:{
+    3:['Perfeito! Você é incrível! 🌟','Nota 10! Mandou muito! 🏆','Três estrelas! Lendário! ⭐'],
+    2:['Muito bem! Quase perfeito! 💪','Ótimo resultado! 🚀','Duas estrelas! Arrasou! 🎉'],
+    1:['Bom começo! Tente de novo! 🙂','Você consegue melhorar! 💡','Não desista! 🌈'],
+    0:['Não foi desta vez... 😅','Tente novamente! Você consegue! 🤗','Treina mais e volta! 💪']},
+  emojis:{3:'🏆',2:'🌟',1:'💡',0:'😅'},
+
+  init(state,phaseId,hits,score,stars){
+    // EMOJI decorativo no topo (sem mascote)
+    const de=document.getElementById('result-emoji-deco');
+    if(de)de.textContent=this.emojis[stars]||'🎉';
+    // Comentário
+    const cm=document.getElementById('result-comment');
+    if(cm){const pool=this.comments[stars]||this.comments[0];
+      cm.textContent=pool[Math.floor(Math.random()*pool.length)];
+      cm.style.color=stars>=3?'#facc15':stars>=2?'#86efac':stars>=1?'#4fc3f7':'#f9a8d4'}
+    // Estrelas
+    const rs=document.getElementById('result-stars');
+    if(rs){rs.innerHTML='';for(let i=1;i<=3;i++){const sp=document.createElement('span');
+      sp.className='result-star'+(i<=stars?' earned':'');sp.textContent='⭐';
+      sp.style.animationDelay=`${(i-1)*.15}s`;rs.appendChild(sp)}}
+    // Stats
+    const rh=document.getElementById('result-hits');if(rh)rh.textContent=`${hits}/5`;
+    const rv=document.getElementById('result-score-val');if(rv)rv.textContent=score;
+    // Botões - clona para limpar listeners
+    const br=document.getElementById('btn-retry');
+    if(br){const nr=br.cloneNode(true);br.parentNode.replaceChild(nr,br);
+      let _rh=false;const _rf=()=>{if(_rh)return;_rh=true;Game.startPhase(phaseId)};
+      nr.addEventListener('touchend',e=>{e.preventDefault();_rf()},{passive:false});
+      nr.addEventListener('click',()=>_rf())}
+    const bn=document.getElementById('btn-next-phase');
+    if(bn){const nn=bn.cloneNode(true);bn.parentNode.replaceChild(nn,bn);
+      let _nh=false;
+      if(phaseId>=20){nn.textContent='🏠 Início';
+        const _nf=()=>{if(_nh)return;_nh=true;Game.showFinal()};
+        nn.addEventListener('touchend',e=>{e.preventDefault();_nf()},{passive:false});
+        nn.addEventListener('click',()=>_nf())}
+      else{nn.textContent=`➡️ Fase ${phaseId+1}!`;
+        const _nf=()=>{if(_nh)return;_nh=true;Game.startPhase(phaseId+1)};
+        nn.addEventListener('touchend',e=>{e.preventDefault();_nf()},{passive:false});
+        nn.addEventListener('click',()=>_nf())}}
+    const bm=document.getElementById('btn-map-result');
+    if(bm){const nm=bm.cloneNode(true);bm.parentNode.replaceChild(nm,bm);
+      let _mh=false;const _mf=()=>{if(_mh)return;_mh=true;Game.goMap()};
+      nm.addEventListener('touchend',e=>{e.preventDefault();_mf()},{passive:false});
+      nm.addEventListener('click',()=>_mf())}}
+};
+
+// ════════════════════════════════════════════
+//  GAME CONTROLLER
+// ════════════════════════════════════════════
+const Game={
+  state:null,
+  init(){
+    this.state=SaveSystem.load();
+    Particles.init();Confetti.init();
+    AudioSystem.init(this.state.audioEnabled);
+    const ab=document.getElementById('audio-toggle');
+    if(ab){ab.addEventListener('click',()=>{
+      this.state=SaveSystem.toggleAudio(this.state);AudioSystem.toggle(this.state)})}
+    QuizMascot.init();
+    this.showScreen('screen-home');HomeScreen.init(this.state)},
+
+  showScreen(id){
+    // Remove active e esconde TODAS as telas antes de mostrar a nova
+    document.querySelectorAll('.screen').forEach(s=>{
+      s.classList.remove('active');
+      s.style.display='none';
+      s.style.pointerEvents='none'});
+    const t=document.getElementById(id);if(!t)return;
+    t.classList.toggle('scrollable',id==='screen-map');
+    t.style.display='flex';
+    t.style.pointerEvents='';
+    requestAnimationFrame(()=>requestAnimationFrame(()=>t.classList.add('active')));
+    // Controla visibilidade dos mascotes por tela
+    const qm=document.getElementById('quiz-mascot-wrap');
+    const mm=document.getElementById('map-mascot');
+    if(qm)qm.style.display=id==='screen-quiz'?'flex':'none';
+    // Mapa: mascote só aparece no mapa
+    if(id==='screen-map'){if(mm)mm.style.display='flex'}
+    else if(mm){mm.style.display='none';MapMascot.destroy()}},
+
+  startGame(){HomeScreen.teardown();MapScreen.init(this.state);this.showScreen('screen-map')},
+  continueGame(){HomeScreen.teardown();MapScreen.init(this.state);this.showScreen('screen-map')},
+  goHome(){QuizScreen.destroy();this.showScreen('screen-home');HomeScreen.init(this.state)},
+  goMap(){QuizScreen.destroy();MapScreen.init(this.state);this.showScreen('screen-map')},
+
+  startPhase(phaseId){
+    const pd=this.state.phases[phaseId-1];if(!pd||!pd.unlocked)return;
+    document.getElementById('popup-feedback')?.classList.remove('show');
+    QuizScreen.init(phaseId);this.showScreen('screen-quiz')},
+
+  finishPhase(phaseId,hits,timeBonus,comboBonus){
+    const stars=calcStars(hits),score=calcScore(hits,timeBonus,comboBonus);
+    const result=SaveSystem.updatePhase(this.state,phaseId,stars,score);
+    this.state=result.state;
+    if(result.newUnlock){setTimeout(()=>Confetti.burst(),500);AudioSystem.play('unlock')}
+    MapScreen.refresh(this.state);
+    ResultScreen.init(this.state,phaseId,hits,score,stars);
+    this.showScreen('screen-result')},
+
+  // Salva progresso e vai direto ao mapa (sem tela de resultado)
+  finishPhaseAndGoMap(phaseId,hits,timeBonus,comboBonus){
+    const stars=calcStars(hits),score=calcScore(hits,timeBonus,comboBonus);
+    const result=SaveSystem.updatePhase(this.state,phaseId,stars,score);
+    this.state=result.state;
+    if(result.newUnlock){setTimeout(()=>Confetti.burst(),500);AudioSystem.play('unlock')}
+    QuizScreen.destroy();
+    MapScreen.init(this.state);
+    this.showScreen('screen-map')},
+
+  showFinal(){this.showScreen('screen-final');Confetti.burst()}
+};
+
+document.addEventListener('DOMContentLoaded',()=>Game.init());
+</script>
+</body>
+</html>
